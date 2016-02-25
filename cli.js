@@ -81,4 +81,8 @@ co(function* () {
   ${`https://npmjs.org/package/${dep.name}`.gray}
 	`
 	}).join(''))
-}).catch(e => console.log(e.stack))
+}).catch(e => {
+	spin.stop()
+	console.log(e.stack)
+	process.exit(1)
+})
