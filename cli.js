@@ -15,7 +15,8 @@ const argv = minimist(process.argv.slice(2), {
 	alias: {
 		h: 'help',
 		v: 'version',
-		r: 'registry'
+		r: 'registry',
+		c: 'cn'
 	}
 })
 
@@ -33,6 +34,7 @@ if (argv.help) {
     -v/--version:    Print version
     -h/--help:       Print help
     -r/--registry:   Set custom npm registry
+    -c/--cn:         Set npm registry to China mirror
 	`)
 	process.exit()
 }

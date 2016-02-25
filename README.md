@@ -26,6 +26,7 @@ $ decheck -h
     -v/--version:    Print version
     -h/--help:       Print help
     -r/--registry:   Set custom npm registry
+		-c/--cn:         Set npm registry to China mirror
 ```
 
 ## License
