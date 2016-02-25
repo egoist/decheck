@@ -4,7 +4,7 @@
 
 ## Purpose
 
-I always want to browse a modules's `package.json` to find new modules that are used by it. With [octo-link](https://github.com/octo-linker/chrome-extension) I can click to know what the module is all about, but click every time? Nope, I want all in one time.
+I always want to browse a module's `package.json` to find new modules that are used by it. With [octo-link](https://github.com/octo-linker/chrome-extension) I can click to know what the module is all about, but click every time? Nope, I want all in one time.
 
 ![preview](https://ooo.0o0.ooo/2016/02/24/56ce762bd0b80.png)
 
