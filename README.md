@@ -17,6 +17,12 @@ $ npm install -g decheck
 ## Usage
 
 ```bash
+$ decheck express
+
+$ decheck .
+```
+
+```bash
 $ decheck -h
 
   Usage:

@@ -44,13 +44,8 @@ if (argv.version) {
 	process.exit()
 }
 
-const moduleName = argv._[0]
+const moduleName = argv._[0] || '.'
 const moduleVersion = argv._[1]
-
-if (!moduleName) {
-	console.log('Required a module name')
-	process.exit(1)
-}
 
 let registry = argv.registry || 'https://registry.npmjs.org/'
 if (argv.cn) {
@@ -59,9 +54,17 @@ if (argv.cn) {
 
 co(function* () {
 	spin.start()
-	const pkg = yield fetch(`${registry}${moduleName}`).then(data => data.json())
-	const version = moduleVersion || pkg['dist-tags']['latest']
-	let deps = pkg.versions[version].dependencies
+
+	let deps
+	let version
+
+	if (moduleName === '.' || moduleName === './') {
+		deps = require(process.cwd() + '/package.json').dependencies
+	} else {
+		const pkg = yield fetch(`${registry}${moduleName}`).then(data => data.json())
+		version = moduleVersion || pkg['dist-tags']['latest']
+		deps = pkg.versions[version].dependencies
+	}
 
 	if (!deps) {
 		spin.stop()
@@ -74,7 +77,7 @@ co(function* () {
 		return isTaken(dep.key, {registry, timeout: 10000}).then(data => data.versions[data['dist-tags'].latest])
 	})
 	spin.stop()
-	console.log(depsData.map(dep => {
+	console.log(`\n  ${`Dependencies of ${moduleName}`.underline.magenta}:\n` + depsData.map(dep => {
 		return `
   ${dep.name.bold} ${'v'.gray}${dep.version.gray}
   ${dep.description.cyan}
