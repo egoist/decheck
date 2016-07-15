@@ -59,10 +59,11 @@ if (argv.cn) {
 
 co(function* () {
 	let deps
+	let packageName = moduleName
 	if (!isModule(moduleName)) {
 		try {
 			const pkg = require(process.cwd() + '/package.json')
-			moduleName = pkg.name
+			packageName = pkg.name
 			deps = pkg[field]
 		} catch (e) {}
 	}
@@ -83,7 +84,7 @@ co(function* () {
 	  left: 'center',
 	  width: 'half',
 	  height: 'shrink',
-	  label: ` {green-fg}${moduleName}{/green-fg} `,
+	  label: ` {green-fg}${packageName}{/green-fg} `,
 	  tags: true
 	})
 	spin.load('Retriving data...')
@@ -106,7 +107,7 @@ co(function* () {
 	})
 	spin.stop()
 	// display screen
-	screen.title = moduleName
+	screen.title = packageName
 	const box = blessed.box({
 		parent: screen,
 	  top: 'center',
@@ -121,7 +122,7 @@ co(function* () {
 	  vi: true,
 	  padding: 1,
 	  keys: true,
-	  content: `${`${moduleName} has ${deps.length} ${field}`.yellow}\n` + depsData.map(dep => {
+	  content: `${`${packageName} has ${deps.length} ${field}`.yellow}\n` + depsData.map(dep => {
 			return `
 ${dep.name.white.bold} ${'v'.gray}${dep.version.gray}
 ${dep.description.cyan}
