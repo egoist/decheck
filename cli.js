@@ -35,10 +35,11 @@ if (argv.help) {
 
     decheck <moduleName> [moduleVersion]
 
-    -v/--version:    Print version
-    -h/--help:       Print help
+    -d/--dev:        Check the devDependencies
     -r/--registry:   Set custom npm registry
     -c/--cn:         Set npm registry to China mirror
+    -v/--version:    Print version
+    -h/--help:       Print help
   `)
   process.exit()
 }
