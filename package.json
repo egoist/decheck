@@ -29,7 +29,6 @@
     "giturl": "^1.0.0",
     "is-taken": "^1.0.0",
     "minimist": "^1.2.0",
-    "node-fetch": "^1.3.3",
     "object2array": "^0.1.0",
     "update-notifier": "^0.6.0"
   }

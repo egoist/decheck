@@ -2,7 +2,6 @@
 'use strict'
 
 const co = require('co')
-const fetch = require('node-fetch')
 const minimist = require('minimist')
 const toArray = require('object2array')
 const isTaken = require('is-taken')
