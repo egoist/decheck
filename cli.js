@@ -106,7 +106,11 @@ co(function* () {
   deps = toArray(deps)
 
   const depsData = yield deps.map(dep => {
-    return isTaken(dep.key, {registry, timeout: 10000}).then(data => data.versions[data['dist-tags'].latest])
+    return isTaken(dep.key, {
+      version: dep.value,
+      registry,
+      timeout: 10000
+    })
   })
   spin.stop()
   // display screen
