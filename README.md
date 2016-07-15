@@ -4,9 +4,9 @@
 
 ## Purpose
 
-I always want to browse a module's `package.json` to find new modules that are used by it. With [octo-link](https://github.com/octo-linker/chrome-extension) I can click to know what the module is all about, but click every time? Nope, I want all in one time.
+I always need to browse a module's `package.json` to find new modules that are used by it. [octo-link](https://github.com/octo-linker/chrome-extension) and [npm-hub](https://github.com/zeke/npm-hub) both are good but not enough for me, becase I use terminal in most time.
 
-![preview](https://ooo.0o0.ooo/2016/02/24/56ce762bd0b80.png)
+[![asciicast](https://asciinema.org/a/79811.png)](https://asciinema.org/a/79811)
 
 ## Install
 
@@ -19,6 +19,7 @@ $ npm install -g decheck
 ```bash
 $ decheck express
 
+# or check current working project
 $ decheck .
 ```
 
@@ -27,7 +28,7 @@ $ decheck -h
 
   Usage:
 
-    decheck <moduleName> [version]
+    decheck <moduleName> [moduleVersion]
 
     -v/--version:    Print version
     -h/--help:       Print help

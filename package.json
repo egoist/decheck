@@ -23,6 +23,7 @@
     "npm"
   ],
   "dependencies": {
+    "blessed": "^0.1.81",
     "co": "^4.6.0",
     "colorful": "^2.1.0",
     "io-spin": "^0.3.0",

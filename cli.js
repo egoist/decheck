@@ -6,21 +6,25 @@ const fetch = require('node-fetch')
 const minimist = require('minimist')
 const toArray = require('object2array')
 const isTaken = require('is-taken')
-const Spin = require('io-spin')
 const update = require('update-notifier')
+const blessed = require('blessed')
+
 const pkg = require('./package')
 require('colorful').toxic()
+
+function isModule(name) {
+	return name !== '.' && name !== './'
+}
 
 const argv = minimist(process.argv.slice(2), {
 	alias: {
 		h: 'help',
 		v: 'version',
 		r: 'registry',
-		c: 'cn'
+		c: 'cn',
+		d: 'dev'
 	}
 })
-
-const spin = new Spin('Box1', 'Checking')
 
 // update notify
 update({pkg}).notify()
@@ -29,7 +33,7 @@ if (argv.help) {
 	console.log(`
   Usage:
 
-    decheck <moduleName> [version]
+    decheck <moduleName> [moduleVersion]
 
     -v/--version:    Print version
     -h/--help:       Print help
@@ -44,8 +48,9 @@ if (argv.version) {
 	process.exit()
 }
 
-const moduleName = argv._[0] || '.'
+let moduleName = argv._[0] || '.'
 const moduleVersion = argv._[1]
+const field = argv.dev ? 'devDependencies' : 'dependencies'
 
 let registry = argv.registry || 'https://registry.npmjs.org/'
 if (argv.cn) {
@@ -53,22 +58,45 @@ if (argv.cn) {
 }
 
 co(function* () {
-	spin.start()
-
 	let deps
-	let version
+	if (!isModule(moduleName)) {
+		try {
+			const pkg = require(process.cwd() + '/package.json')
+			moduleName = pkg.name
+			deps = pkg[field]
+		} catch (e) {}
+	}
 
-	if (moduleName === '.' || moduleName === './') {
-		deps = require(process.cwd() + '/package.json').dependencies
-	} else {
+	const screen = blessed.screen({
+	  smartCSR: true,
+	  autoPadding: true,
+	  warnings: true
+	})
+
+	const spin = blessed.loading({
+		parent: screen,
+		hidden: true,
+		border: {
+	    type: 'line'
+	  },
+	  top: 'center',
+	  left: 'center',
+	  width: 'half',
+	  height: 'shrink',
+	  label: ` {green-fg}${moduleName}{/green-fg} `,
+	  tags: true
+	})
+	spin.load('Retriving data...')
+
+	if (isModule(moduleName)) {
 		const pkg = yield fetch(`${registry}${moduleName}`).then(data => data.json())
-		version = moduleVersion || pkg['dist-tags']['latest']
-		deps = pkg.versions[version].dependencies
+		const version = moduleVersion || pkg['dist-tags']['latest']
+		deps = pkg.versions[version][field]
 	}
 
 	if (!deps) {
 		spin.stop()
-		console.log('Sorry, but this package depends on nothing.')
+		console.log(`Sorry, but this package has no ${field}`)
 		process.exit()
 	}
 	deps = toArray(deps)
@@ -77,13 +105,55 @@ co(function* () {
 		return isTaken(dep.key, {registry, timeout: 10000}).then(data => data.versions[data['dist-tags'].latest])
 	})
 	spin.stop()
-	console.log(`\n  ${`Dependencies of ${moduleName}`.underline.magenta}:\n` + depsData.map(dep => {
-		return `
-  ${dep.name.bold} ${'v'.gray}${dep.version.gray}
-  ${dep.description.cyan}
-  ${`https://npmjs.org/package/${dep.name}`.gray}
-	`
-	}).join(''))
+	// display screen
+	screen.title = moduleName
+	const box = blessed.box({
+		parent: screen,
+	  top: 'center',
+	  left: 'center',
+	  width: '80%',
+	  height: '80%',
+	  scrollable: true,
+	  scrollbar: {
+	    ch: ' ',
+	    inverse: true
+	  },
+	  vi: true,
+	  padding: 1,
+	  keys: true,
+	  content: `${`${moduleName} has ${deps.length} ${field}`.yellow}\n` + depsData.map(dep => {
+			return `
+${dep.name.white.bold} ${'v'.gray}${dep.version.gray}
+${dep.description.cyan}
+${`https://npmjs.org/package/${dep.name}`.gray}
+		`
+		}).join(''),
+	  tags: true,
+	  border: {
+	    type: 'line'
+	  },
+	  alwaysScroll: true,
+	  style: {
+	    fg: 'black',
+	    bg: 'black',
+	    border: {
+	      fg: '#f0f0f0'
+	    },
+	    scrollbar: {
+		    bg: '#ccc',
+		    fg: 'blue'
+		  }
+	  }
+	})
+
+	screen.append(box)
+	screen.key(['escape', 'q', 'C-c'], (ch, key) => {
+	  return process.exit(0)
+	})
+
+	box.focus()
+
+	screen.render()
 }).catch(e => {
 	spin.stop()
 	console.log(e.stack)
