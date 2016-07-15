@@ -60,11 +60,13 @@ if (argv.cn) {
 
 co(function* () {
   let deps
+  let version
   let packageName = moduleName
   if (!isModule(moduleName)) {
     try {
       const pkg = require(process.cwd() + '/package.json')
       packageName = pkg.name
+      version = pkg.version
       deps = pkg[field]
     } catch (e) {}
   }
@@ -92,7 +94,7 @@ co(function* () {
 
   if (isModule(moduleName)) {
     const pkg = yield fetch(`${registry}${moduleName}`).then(data => data.json())
-    const version = moduleVersion || pkg['dist-tags']['latest']
+    version = moduleVersion || pkg['dist-tags']['latest']
     deps = pkg.versions[version][field]
   }
 
@@ -123,7 +125,7 @@ co(function* () {
     vi: true,
     padding: 1,
     keys: true,
-    content: `${`${packageName} has ${deps.length} ${field}`.yellow}\n` + depsData.map(dep => {
+    content: `${`${packageName}${version ? `(${version})` : ''} has ${deps.length} ${field}`.yellow}\n` + depsData.map(dep => {
       return `
 ${dep.name.white.bold} ${'v'.gray}${dep.version.gray}
 ${dep.description.cyan}
