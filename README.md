@@ -1,6 +1,6 @@
-# decheck [![NPM version](https://img.shields.io/npm/v/decheck.svg)](https://npmjs.com/package/decheck) [![NPM downloads](https://img.shields.io/npm/dm/decheck.svg)](https://npmjs.com/package/decheck)
+# decheck [![npm version](https://img.shields.io/npm/v/decheck.svg)](https://npmjs.com/package/decheck) [![npm downloads](https://img.shields.io/npm/dm/decheck.svg)](https://npmjs.com/package/decheck)
 
-> Checkout the dependencies an NPM module depends on.
+> Checkout the dependencies an npm module depends on.
 
 ## Purpose
 
