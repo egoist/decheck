@@ -8,12 +8,20 @@ const toArray = require('object2array')
 const isTaken = require('is-taken')
 const update = require('update-notifier')
 const blessed = require('blessed')
+const giturl = require('giturl')
 
 const pkg = require('./package')
 require('colorful').toxic()
 
 function isModule(name) {
   return name !== '.' && name !== './'
+}
+
+function getRepoURL(repo) {
+  if (repo.repository) {
+    return giturl.parse(repo.repository.url)
+  }
+  return `https://npmjs.org/package/${repo.name}`
 }
 
 const argv = minimist(process.argv.slice(2), {
@@ -133,7 +141,7 @@ co(function* () {
       return `
 ${dep.name.white.bold} ${'v'.gray}${dep.version.gray}
 ${dep.description.cyan}
-${`https://npmjs.org/package/${dep.name}`.gray}
+${getRepoURL(dep).gray}
     `
     }).join(''),
     tags: true,
