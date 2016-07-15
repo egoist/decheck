@@ -13,6 +13,9 @@ const giturl = require('giturl')
 const pkg = require('./package')
 require('colorful').toxic()
 
+let screen
+let spin
+
 function isModule(name) {
   return name !== '.' && name !== './'
 }
@@ -22,6 +25,14 @@ function getRepoURL(repo) {
     return giturl.parse(repo.repository.url)
   }
   return `https://npmjs.org/package/${repo.name}`
+}
+
+function leave(msg, code) {
+  if (screen) {
+    screen.destroy()
+  }
+  console.log(msg)
+  process.exit(code || 0)
 }
 
 const argv = minimist(process.argv.slice(2), {
@@ -79,13 +90,13 @@ co(function* () {
     } catch (e) {}
   }
 
-  const screen = blessed.screen({
+  screen = blessed.screen({
     smartCSR: true,
     autoPadding: true,
     warnings: true
   })
 
-  const spin = blessed.loading({
+  spin = blessed.loading({
     parent: screen,
     hidden: true,
     border: {
@@ -96,21 +107,30 @@ co(function* () {
     width: 'half',
     height: 'shrink',
     label: ` {green-fg}${packageName}{/green-fg} `,
-    tags: true
+    tags: true,
+    keys: true
   })
   spin.load('Retriving data...')
 
   if (isModule(moduleName)) {
-    const pkg = yield fetch(`${registry}${moduleName}`).then(data => data.json())
-    version = moduleVersion || pkg['dist-tags']['latest']
-    deps = pkg.versions[version][field]
+    const pkg = yield isTaken(moduleName, {version: moduleVersion})
+    if (pkg) {
+      if (pkg.version) {
+        version = pkg.version
+        deps = pkg[field]
+      } else {
+        version = pkg['dist-tags'] && pkg['dist-tags']['latest']
+        deps = pkg.versions[version][field]
+      }
+    } else {
+      leave(`Sorry, package ${moduleName} is not registered on npm.`, 1)
+    }
   }
 
   if (!deps) {
-    spin.stop()
-    console.log(`Sorry, but this package has no ${field}`)
-    process.exit()
+    leave(`Sorry, but this package has no ${field}`, 1)
   }
+
   deps = toArray(deps)
 
   const depsData = yield deps.map(dep => {
@@ -171,7 +191,5 @@ ${getRepoURL(dep).gray}
 
   screen.render()
 }).catch(e => {
-  spin.stop()
-  console.log(e.stack)
-  process.exit(1)
+  leave(e.stack)
 })
