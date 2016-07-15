@@ -1,6 +1,6 @@
 {
   "name": "decheck",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Checkout the dependencies an NPM module depends on.",
   "license": "MIT",
   "repository": "egoist/decheck",
