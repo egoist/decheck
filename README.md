@@ -4,7 +4,7 @@
 
 ## Purpose
 
-I always need to browse a module's `package.json` to find new modules that are used by it. [octo-link](https://github.com/octo-linker/chrome-extension) and [npm-hub](https://github.com/zeke/npm-hub) both are good but not enough for me, becase I use terminal in most time.
+I always need to browse a module's `package.json` to find new modules that are used by it. [octo-link](https://github.com/octo-linker/chrome-extension) and [npm-hub](https://github.com/zeke/npm-hub) both are good but not enough for me, cuz I often use terminal.
 
 [![asciicast](https://asciinema.org/a/79811.png)](https://asciinema.org/a/79811)
 
@@ -15,6 +15,8 @@ $ npm install -g decheck
 ```
 
 ## Usage
+
+In the program screen you can use arrow keys or your mouse to scroll content, `Vi mode` is also supported. Press `q` or `ESC` or `Ctrl-C` to exit program.
 
 ```bash
 $ decheck express
